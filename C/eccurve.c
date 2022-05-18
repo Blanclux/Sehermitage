@@ -1,7 +1,7 @@
 /**
  * eccurve.c
  *  EC Curve Name Listing Program for OpenSSL
- *  wrtten by blanclux
+ *  written by blanclux
  *  This software is distributed on an "AS IS" basis WITHOUT WARRANTY OF ANY KIND.
  */
 #include <stdio.h>

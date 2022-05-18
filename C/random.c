@@ -1,7 +1,7 @@
 /**
  * random.c
- *  Ranom number generation using GNU MP
- *  wrtten by blanclux
+ *  Random number generation using GNU MP
+ *  written by blanclux
  *  This software is distributed on an "AS IS" basis WITHOUT WARRANTY OF ANY KIND.
  */
 

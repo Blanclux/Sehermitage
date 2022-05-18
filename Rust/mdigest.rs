@@ -1,7 +1,7 @@
 /**
  * mdigest.rs
  * Message Digest Program
- *  wrtten by blanclux
+ *  written by blanclux
  *  This software is distributed on an "AS IS" basis WITHOUT WARRANTY OF ANY KIND.
  */
 extern crate crypto;
