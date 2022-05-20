@@ -1,9 +1,9 @@
-/**
- * prime.rs
- *  Prime number generation program
- *  written by blanclux
- *  This software is distributed on an "AS IS" basis WITHOUT WARRANTY OF ANY KIND.
- */
+//!
+//! Prime number generation program
+//!
+//  written by blanclux
+//  This software is distributed on an "AS IS" basis WITHOUT WARRANTY OF ANY KIND.
+//
 extern crate num_bigint;
 extern crate num_traits;
 
@@ -24,7 +24,7 @@ const SMALL_PRIMES: [u32; 168] = [
 	937, 941, 947, 953, 967, 971, 977, 983, 991, 997,
 ];
 
-/* Find the next prime number */
+/// Find the next prime number
 pub fn find_prime(mut n: BigUint, ntests: u32) -> BigUint {
 	// If the input is even, it should be made odd.
 	if &n % 2u32 == BigUint::zero() {
@@ -37,7 +37,7 @@ pub fn find_prime(mut n: BigUint, ntests: u32) -> BigUint {
 	n
 }
 
-/* prime check (Rabin method) */
+/// prime check (Rabin method)
 pub fn is_prime(n: &BigUint, ntests: u32) -> bool {
 	for i in SMALL_PRIMES.iter() {
 		if n % i == BigUint::zero() {
@@ -88,24 +88,23 @@ fn decompose(n: &BigUint) -> (BigUint, usize) {
 	(d, r)
 }
 
-/* Random number in 0 < r < limit */
+/// Random number in 0 < r < limit
 pub fn random_max(limit: &BigUint) -> BigUint {
 	let mut rng = rand::thread_rng();
 
-	rng.gen_biguint_range(&BigUint::one(), &limit)
+	rng.gen_biguint_range(&BigUint::one(), limit)
 }
 
-/* Random number of specified bits length */
+/// Random number of specified bits length
 pub fn random_bit(size: usize) -> BigUint {
-	let mut limit;
-	limit = BigUint::one();
+	let mut limit = BigUint::one();
 	limit = &limit << size;
 	limit = &limit - 1u32;
 
 	random_max(&limit)
 }
 
-/* Random prime generator */
+/// Random prime generator
 pub fn random_prime(bits: usize) -> BigUint {
 	if bits == 1 {
 		return BigUint::one();
@@ -113,75 +112,75 @@ pub fn random_prime(bits: usize) -> BigUint {
 
 	let mut p = random_bit(bits);
 	let mut s = BigUint::one();
-	s <<= bits - 1;		// Set MSB
+	s <<= bits - 1; // Set MSB
 	p |= s;
-	p |= BigUint::one();	// Set odd number
+	p |= BigUint::one(); // Set odd number
 
 	let dir = random_bit(32) & BigUint::one();
 	while !is_prime(&p, RABIN_P) {
 		if dir == BigUint::one() {
 			p += 2u32;
-			if p.bits() != bits {
+			if p.bits() != bits as u64 {
 				p = BigUint::one();
 				p <<= bits - 1;
-				p += 1u32;	// 100.....1
+				p += 1u32; // 100.....1
 			}
 		} else {
 			p -= 2u32;
-			if p.bits() != bits {
+			if p.bits() != bits as u64 {
 				p = BigUint::one();
 				p <<= bits;
-				p -= 1u32; 	// 111.....1
+				p -= 1u32; // 111.....1
 			}
 		}
 	}
 	p
 }
 
-/* Random prime generator (min < rand < max) */
+/// Random prime generator (min < rand < max)
 pub fn random_prime_range(max: &BigUint, min: &BigUint) -> BigUint {
-	let mut pmax = max.clone();
-	let mut pmin = min.clone();
+	let mut p_max = max.clone();
+	let mut p_min = min.clone();
 
-	if pmax < pmin {
+	if p_max < p_min {
 		return BigUint::from(2u32); // smallest prime 2
 	}
-	if pmax < BigUint::from(2u32) {
+	if p_max < BigUint::from(2u32) {
 		return BigUint::from(2u32);
 	}
-	if pmax == pmin && (&pmax & BigUint::one() == BigUint::zero()) {
+	if p_max == p_min && (&p_max & BigUint::one() == BigUint::zero()) {
 		return BigUint::from(2u32);
 	}
 
-	if &pmax & BigUint::one() == BigUint::zero() {
-		// if pmax is even, +1
-		pmax += 1u32;
+	if &p_max & BigUint::one() == BigUint::zero() {
+		// if p_max is even, +1
+		p_max += 1u32;
 	}
-	if &pmin & BigUint::one() == BigUint::zero() {
-		// if pmin is even, +1
-		if pmin.is_zero() {
-			pmin = BigUint::from(2u32);
+	if &p_min & BigUint::one() == BigUint::zero() {
+		// if p_min is even, +1
+		if p_min.is_zero() {
+			p_min = BigUint::from(2u32);
 		} else {
-			pmin += 1u32;
+			p_min += 1u32;
 		}
 	}
 
-	let mut c = (&pmax - &pmin) / BigUint::from(2u32); // c can't be smaller than 1
+	let mut c = (&p_max - &p_min) / BigUint::from(2u32); // c can't be smaller than 1
 	let mut p;
 	loop {
 		p = random_max(&c);
-		p += &pmin;
+		p += &p_min;
 		p |= BigUint::one();
-		if p <= pmax {
+		if p <= p_max {
 			break;
 		}
 	}
 
-	/* prime check */
+	// prime check
 	let dir = random_bit(32) & BigUint::one();
 	loop {
-		let isprime = is_prime(&p, RABIN_P);
-		if isprime {
+		let is_prime = is_prime(&p, RABIN_P);
+		if is_prime {
 			break;
 		}
 		c -= BigUint::one();
@@ -190,13 +189,13 @@ pub fn random_prime_range(max: &BigUint, min: &BigUint) -> BigUint {
 		}
 		if dir == BigUint::one() {
 			p += 2u32;
-			if p > pmax {
-				p = pmin.clone();
+			if p > p_max {
+				p = p_min.clone();
 			}
 		} else {
 			p -= 2u32;
-			if p < pmin || p.is_one() {
-				p = pmax.clone();
+			if p < p_min || p.is_one() {
+				p = p_max.clone();
 			}
 		}
 	}
